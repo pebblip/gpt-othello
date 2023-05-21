@@ -6,7 +6,7 @@ FROM python:3.11.3-buster as base
 ENV APP_HOME="/app" \
 #    PYTHONFAULTHANDLER=1 \
 #    PYTHONUNBUFFERED=1 \
-#    PYTHONPATH="/app/app" \
+#    PYTHONPATH="/app/gpt_othello" \
     PIP_NO_CACHE_DIR=off \
     PIP_DISABLE_PIP_VERSION_CHECK=on \
     PIP_DEFAULT_TIMEOUT=100 \
@@ -29,13 +29,6 @@ RUN apt update \
 # install poetry: respects $POETRY_VERSION & $POETRY_HOME
 RUN curl -sS https://install.python-poetry.org | python3 -
 
-WORKDIR $APP_HOME
-
-# install deps: no dev deps
-COPY pyproject.toml poetry.lock ./
-RUN poetry config virtualenvs.in-project true \
-    && poetry install --no-dev --no-interaction
-
 ###############################################
 # Development Image
 ###############################################
@@ -43,14 +36,15 @@ FROM base as dev
 
 WORKDIR $APP_HOME
 
-# copy poetry + venv
+# copy poetry
 COPY --from=builder $POETRY_HOME $POETRY_HOME
-
-# ENV PATH=$APP_HOME/.venv/bin:$PATH
+# add .venv to path
+ENV PATH=$APP_HOME/.venv/bin:$PATH
 
 # install deps: quicker as runtime deps are already installed
 COPY pyproject.toml poetry.lock ./
-RUN poetry config virtualenvs.in-project true \
+COPY gpt_othello ./gpt_othello
+RUN poetry config virtualenvs.create false \
     && poetry install --no-interaction
 
 ###############################################
@@ -59,8 +53,6 @@ RUN poetry config virtualenvs.in-project true \
 FROM base as prod
 
 WORKDIR $APP_HOME
-
-ENV PATH=$APP_HOME/.venv/bin:$PATH
 
 # copy src
 COPY app ./app
