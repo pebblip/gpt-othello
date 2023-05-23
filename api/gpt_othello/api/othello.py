@@ -47,5 +47,5 @@ def next(
     othello = Othello(BOARD_SIZE)
     othello.set_board(q.board)
     othello.place_human((q.x, q.y), STONE.BLACK)
-    othello.place_com(STONE.WHITE)
+    othello.place_computer(STONE.WHITE)
     return Board(rows=othello.get_board(), valids=othello.get_valid_moves(STONE.BLACK), status=othello.is_game_ended())
