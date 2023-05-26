@@ -68,7 +68,7 @@ function toDimension(): number[][] {
 async function onPlace(x: number, y: number) {
   console.log("place", x, y);
 
-  const { data, error } = await post("/user-place", {
+  const { data, error } = await post("/user/place", {
     params: {
       query: { x: x, y: y },
     },
@@ -80,7 +80,7 @@ async function onPlace(x: number, y: number) {
 }
 
 async function demandAiToPlace() {
-  const { data, error } = await post("/ai-place", {
+  const { data, error } = await post("/ai/place", {
     body: toDimension(),
   });
   cells.value = toArray(data!.rows);
