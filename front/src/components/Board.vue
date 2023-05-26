@@ -2,13 +2,13 @@
   <v-container>
     <div class="d-flex justify-center">
       <div class="grid">
-        <div
-          class="d-flex justify-center"
-          v-for="i in rows"
-          :key="i"
-          style="width: 100%"
-        >
-          <Cell v-for="j in cols" :key="j" :color="cellAt(i, j)" />
+        <div class="d-flex justify-center" v-for="i in rows" :key="i">
+          <Cell
+            v-for="j in cols"
+            :key="j"
+            :color="cellAt(j, i)"
+            @click="place(j, i)"
+          />
         </div>
       </div>
     </div>
@@ -29,13 +29,23 @@ const props = defineProps({
     type: Array as PropType<StoneColor[]>,
     required: true,
   },
+  cells: {
+    type: Array as PropType<StoneColor[]>,
+    required: true,
+  },
 });
+
+const emits = defineEmits<{ (e: "place", x: number, y: number): void }>();
 
 const rows = Array.from({ length: props.size }, (_, i) => i);
 const cols = Array.from({ length: props.size }, (_, i) => i);
 
 function cellAt(x: number, y: number): StoneColor {
-  return props.cells[x * y];
+  return props.cells[x * props.size + y];
+}
+
+function place(x: number, y: number) {
+  emits("place", x, y);
 }
 </script>
 

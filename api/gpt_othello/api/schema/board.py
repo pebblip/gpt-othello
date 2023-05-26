@@ -3,6 +3,7 @@ from pydantic import BaseModel, Field
 
 
 class Board(BaseModel):
+    size: int = Field(..., title="盤面サイズ", description="盤面のサイズ", example="8")
     rows: list[list[int]] = Field(
         ..., title="盤面", description="2次元配列で表現したオセロ盤面。1:黒,-1:白", example="[[0, 0],[0, 1], [-1, 0], [0, 0]]"
     )

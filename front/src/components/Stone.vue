@@ -12,7 +12,7 @@ import { StoneColor } from "@/modules/StoneColor";
 
 const props = defineProps({
   color: {
-    type: Object as PropType<StoneColor>,
+    type: String as PropType<StoneColor>,
     default: "none",
   },
 });

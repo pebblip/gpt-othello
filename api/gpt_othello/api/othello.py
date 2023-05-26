@@ -49,7 +49,12 @@ def start(
 ):
     othello = Othello(BOARD_SIZE)
 
-    return Board(rows=othello.get_board(), valids=othello.get_valid_moves(STONE.BLACK), status=othello.is_game_ended())
+    return Board(
+        size=BOARD_SIZE,
+        rows=othello.get_board(),
+        valids=othello.get_valid_moves(STONE.BLACK),
+        status=othello.is_game_ended(),
+    )
 
 
 @router.post(
@@ -64,10 +69,39 @@ def user_place(
     othello = Othello(BOARD_SIZE)
     othello.set_board(q.board)
     othello.place_human((q.x, q.y), STONE.BLACK)
-    return Board(rows=othello.get_board(), valids=othello.get_valid_moves(STONE.BLACK), status=othello.is_game_ended())
+
+    print(othello.get_score())
+
+    return Board(
+        size=BOARD_SIZE,
+        rows=othello.get_board(),
+        valids=othello.get_valid_moves(STONE.BLACK),
+        status=othello.is_game_ended(),
+    )
 
 
-@router.get(
+@router.post(
+    "/user-pass",
+    response_model=Board,
+    summary="ユーザのパス",
+    description="ユーザーがパスを宣言してこのエンドポイントにリクエストを送信します。その後、AIが石を置く位置を計算し、その位置に石を置いた後のゲーム盤面をレスポンスとして返します。",
+)
+def user_pass(
+    q: UserPlaceParams = Depends(),
+):
+    othello = Othello(BOARD_SIZE)
+    othello.set_board(q.board)
+    othello.place_human((q.x, q.y), STONE.WHITE)
+
+    return Board(
+        size=BOARD_SIZE,
+        rows=othello.get_board(),
+        valids=othello.get_valid_moves(STONE.BLACK),
+        status=othello.is_game_ended(),
+    )
+
+
+@router.post(
     "/ai-place",
     response_model=Board,
     summary="AIの石の配置",
@@ -79,4 +113,9 @@ def ai_place(
     othello = Othello(BOARD_SIZE)
     othello.set_board(q.board)
     othello.place_computer(STONE.WHITE)
-    return Board(rows=othello.get_board(), valids=othello.get_valid_moves(STONE.BLACK), status=othello.is_game_ended())
+    return Board(
+        size=BOARD_SIZE,
+        rows=othello.get_board(),
+        valids=othello.get_valid_moves(STONE.BLACK),
+        status=othello.is_game_ended(),
+    )
