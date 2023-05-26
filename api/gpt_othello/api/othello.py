@@ -54,6 +54,7 @@ def start(
         rows=othello.get_board(),
         valids=othello.get_valid_moves(STONE.BLACK),
         status=othello.is_game_ended(),
+        score=othello.get_score(),
     )
 
 
@@ -77,6 +78,7 @@ def user_place(
         rows=othello.get_board(),
         valids=othello.get_valid_moves(STONE.BLACK),
         status=othello.is_game_ended(),
+        score=othello.get_score(),
     )
 
 
@@ -98,6 +100,7 @@ def user_pass(
         rows=othello.get_board(),
         valids=othello.get_valid_moves(STONE.BLACK),
         status=othello.is_game_ended(),
+        score=othello.get_score(),
     )
 
 
@@ -113,9 +116,11 @@ def ai_place(
     othello = Othello(BOARD_SIZE)
     othello.set_board(q.board)
     othello.place_computer(STONE.WHITE)
+    print("ai")
     return Board(
         size=BOARD_SIZE,
         rows=othello.get_board(),
         valids=othello.get_valid_moves(STONE.BLACK),
         status=othello.is_game_ended(),
+        score=othello.get_score(),
     )

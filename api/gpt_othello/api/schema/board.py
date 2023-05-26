@@ -14,3 +14,4 @@ class Board(BaseModel):
         example="[(0, 0), (0, 1), (0, 2)]",
     )
     status: GameStatus = Field(..., title="盤面状態", description="0:続行中, 1:黒の勝ち,-1:白の勝ち,3:引き分け", example="0")
+    score: list[int, int] = Field(..., title="スコア", description="黒と白の石の数", example="[2, 2]")

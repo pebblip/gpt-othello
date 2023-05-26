@@ -1,18 +1,16 @@
 <template>
-  <v-container>
-    <div class="d-flex justify-center">
-      <div class="grid">
-        <div class="d-flex justify-center" v-for="i in rows" :key="i">
-          <Cell
-            v-for="j in cols"
-            :key="j"
-            :color="cellAt(j, i)"
-            @click="place(j, i)"
-          />
-        </div>
+  <div class="d-flex justify-center">
+    <div class="grid">
+      <div class="d-flex justify-center" v-for="i in rows" :key="i">
+        <Cell
+          v-for="j in cols"
+          :key="j"
+          :color="cellAt(j, i)"
+          @click="place(j, i)"
+        />
       </div>
     </div>
-  </v-container>
+  </div>
 </template>
 
 <script lang="ts" setup>
