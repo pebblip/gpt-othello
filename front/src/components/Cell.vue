@@ -1,6 +1,8 @@
 <template>
   <div class="cell">
-    <div class="content"><Stone :color="color" /></div>
+    <div class="content d-flex justify-center align-center">
+      <Stone :color="color" />
+    </div>
   </div>
 </template>
 
@@ -30,8 +32,5 @@ const props = defineProps({
   background-color: #008000;
   height: 100%;
   width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
 }
 </style>

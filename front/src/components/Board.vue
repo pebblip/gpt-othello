@@ -16,13 +16,18 @@
 </template>
 
 <script lang="ts" setup>
+import { PropType } from "vue";
 import { StoneColor } from "@/modules/StoneColor";
 import Cell from "./Cell.vue";
 
 const props = defineProps({
   size: {
     type: Number,
-    default: 8,
+    required: true,
+  },
+  cells: {
+    type: Array as PropType<StoneColor[]>,
+    required: true,
   },
   cells: {
     type: Array as PropType<StoneColor[]>,
