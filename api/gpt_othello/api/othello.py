@@ -59,7 +59,7 @@ def start(
 
 
 @router.post(
-    "/user-place",
+    "/user/place",
     response_model=Board,
     summary="ユーザの石の配置",
     description="ユーザーが石を置く位置を指定してこのエンドポイントにリクエストを送信します。その位置に石を置いた後のゲーム盤面をレスポンスとして返します。",
@@ -83,7 +83,7 @@ def user_place(
 
 
 @router.post(
-    "/user-pass",
+    "/user/pass",
     response_model=Board,
     summary="ユーザのパス",
     description="ユーザーがパスを宣言してこのエンドポイントにリクエストを送信します。その後、AIが石を置く位置を計算し、その位置に石を置いた後のゲーム盤面をレスポンスとして返します。",
@@ -105,7 +105,7 @@ def user_pass(
 
 
 @router.post(
-    "/ai-place",
+    "/ai/place",
     response_model=Board,
     summary="AIの石の配置",
     description="このエンドポイントを呼び出すと、AIが次に石を置く位置を計算し、その位置に石を置いた後のゲーム盤面がレスポンスとして返されます。",

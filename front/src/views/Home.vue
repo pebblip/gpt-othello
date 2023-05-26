@@ -80,7 +80,6 @@ onMounted(async () => {
   store.commit("updateLoading", { loading: true });
   try {
     const { data, error } = await get("/start", {});
-
     size.value = data!.size;
     cells.value = toArray(data!.rows);
     const blackScore = data!.score[0];
@@ -97,7 +96,7 @@ async function onPlace(x: number, y: number) {
   }
   store.commit("updateLoading", { loading: true });
   try {
-    const { data, error } = await post("/user-place", {
+    const { data, error } = await post("/user/place", {
       params: {
         query: { x: x, y: y },
       },
@@ -117,11 +116,9 @@ async function onPlace(x: number, y: number) {
 async function demandAiToPlace() {
   store.commit("updateLoading", { loading: true });
   try {
-    console.log("ai1");
-    const { data, error } = await post("/ai-place", {
+    const { data, error } = await post("/ai/place", {
       body: toDimension(),
     });
-    console.log("ai2");
     cells.value = toArray(data!.rows);
     const blackScore = data!.score[0];
     const whiteScore = data!.score[1];
