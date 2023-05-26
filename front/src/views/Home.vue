@@ -1,5 +1,16 @@
 <template>
-  <Board :size="size" :cells="cells" @place="onPlace" />
+  <v-container>
+    <Board :size="size" :cells="cells" @place="onPlace" />
+
+    <v-progress-linear
+      v-if="loading"
+      indeterminate
+      rounded
+      height="20"
+      color="light-gray"
+      striped
+    ></v-progress-linear>
+  </v-container>
 </template>
 
 <script lang="ts" setup>
@@ -9,6 +20,8 @@ import { onMounted } from "vue";
 import { paths } from "@/generated/schema";
 import Board from "@/components/Board.vue";
 import { StoneColor } from "@/modules/StoneColor";
+import { useStore } from "vuex";
+import { computed } from "vue";
 
 const cells = ref<StoneColor[]>([]);
 const size = ref<number>(8);
@@ -16,6 +29,10 @@ const size = ref<number>(8);
 const { get, post } = createClient<paths>({
   baseUrl: "http://localhost:8889/api",
 });
+
+const store = useStore();
+
+const loading = computed(() => store.state.loading);
 
 function toArray(rows: number[][]): StoneColor[] {
   let cells: StoneColor[] = [];
@@ -35,12 +52,6 @@ function toArray(rows: number[][]): StoneColor[] {
   });
   return cells;
 }
-
-onMounted(async () => {
-  const { data, error } = await get("/start", {});
-  size.value = data.size;
-  cells.value = toArray(data!.rows);
-});
 
 function toDimension(): number[][] {
   const rows = [];
@@ -65,24 +76,55 @@ function toDimension(): number[][] {
   return rows;
 }
 
-async function onPlace(x: number, y: number) {
-  console.log("place", x, y);
+onMounted(async () => {
+  store.commit("updateLoading", { loading: true });
+  try {
+    const { data, error } = await get("/start", {});
+    size.value = data!.size;
+    cells.value = toArray(data!.rows);
+    const blackScore = data!.score[0];
+    const whiteScore = data!.score[1];
+    store.commit("updateStone", { black: blackScore, white: whiteScore });
+  } finally {
+    store.commit("updateLoading", { loading: false });
+  }
+});
 
-  const { data, error } = await post("/user/place", {
-    params: {
-      query: { x: x, y: y },
-    },
-    body: toDimension(),
-  });
-  cells.value = toArray(data!.rows);
+async function onPlace(x: number, y: number) {
+  if (loading.value) {
+    return;
+  }
+  store.commit("updateLoading", { loading: true });
+  try {
+    const { data, error } = await post("/user/place", {
+      params: {
+        query: { x: x, y: y },
+      },
+      body: toDimension(),
+    });
+    cells.value = toArray(data!.rows);
+    const blackScore = data!.score[0];
+    const whiteScore = data!.score[1];
+    store.commit("updateStone", { black: blackScore, white: whiteScore });
+  } finally {
+    store.commit("updateLoading", { loading: false });
+  }
 
   await demandAiToPlace();
 }
 
 async function demandAiToPlace() {
-  const { data, error } = await post("/ai/place", {
-    body: toDimension(),
-  });
-  cells.value = toArray(data!.rows);
+  store.commit("updateLoading", { loading: true });
+  try {
+    const { data, error } = await post("/ai/place", {
+      body: toDimension(),
+    });
+    cells.value = toArray(data!.rows);
+    const blackScore = data!.score[0];
+    const whiteScore = data!.score[1];
+    store.commit("updateStone", { black: blackScore, white: whiteScore });
+  } finally {
+    store.commit("updateLoading", { loading: false });
+  }
 }
 </script>
