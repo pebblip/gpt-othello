@@ -2,13 +2,13 @@
   <v-container>
     <div class="d-flex justify-center">
       <div class="grid">
-        <div
-          class="d-flex justify-center"
-          v-for="i in [1, 2, 3, 4, 5, 6, 7, 8]"
-          :key="i"
-          style="width: 100%"
-        >
-          <Cell v-for="j in [1, 2, 3, 4, 5, 5, 6, 7, 8]" :key="j" />
+        <div class="d-flex justify-center" v-for="i in rows" :key="i">
+          <Cell
+            v-for="j in cols"
+            :key="j"
+            :color="cellAt(j, i)"
+            @click="place(j, i)"
+          />
         </div>
       </div>
     </div>
@@ -16,7 +16,7 @@
 </template>
 
 <script lang="ts" setup>
-import { isUserWhitespacable } from "@babel/types";
+import { StoneColor } from "@/modules/StoneColor";
 import Cell from "./Cell.vue";
 
 const props = defineProps({
@@ -24,19 +24,24 @@ const props = defineProps({
     type: Number,
     default: 8,
   },
+  cells: {
+    type: Array as PropType<StoneColor[]>,
+    required: true,
+  },
 });
 
-enum Status {
-  Black,
-  White,
-  Empty,
+const emits = defineEmits<{ (e: "place", x: number, y: number): void }>();
+
+const rows = Array.from({ length: props.size }, (_, i) => i);
+const cols = Array.from({ length: props.size }, (_, i) => i);
+
+function cellAt(x: number, y: number): StoneColor {
+  return props.cells[x * props.size + y];
 }
 
-type Point = {
-  x: number;
-  y: number;
-  status: Status;
-};
+function place(x: number, y: number) {
+  emits("place", x, y);
+}
 </script>
 
 <style scoped>

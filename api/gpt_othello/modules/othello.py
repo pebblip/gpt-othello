@@ -37,7 +37,7 @@ class Othello:
         initial_board = np.array(board)
         self.board = self.game.setInitBoard(initial_board)
 
-    def get_board(self) -> list[STONE]:
+    def get_board(self) -> list[list[STONE]]:
         return self.board.tolist()
 
     def get_valid_moves(self, stone: STONE) -> list[Position]:
@@ -52,8 +52,14 @@ class Othello:
         self.board, _ = self.game.getNextState(self.board, Player.HUMAN, action)
 
     def place_computer(self, stone: STONE):
-        action = self.computer(self.game.getCanonicalForm(self.board, Player.HUMAN))
+        action = self.computer(self.game.getCanonicalForm(self.board, Player.COMPUTER))
         self.board, _ = self.game.getNextState(self.board, Player.COMPUTER, action)
+
+    def get_score(self) -> tuple[int, int]:
+        print(self.board.flatten())
+        human_score = len([cell for cell in self.board.flatten() if cell == STONE.BLACK])
+        computer_score = len([cell for cell in self.board.flatten() if cell == STONE.WHITE])
+        return (human_score, computer_score)
 
     def is_game_ended(self) -> GameStatus:
         ended = self.game.getGameEnded(self.board, Player.HUMAN)

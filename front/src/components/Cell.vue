@@ -1,8 +1,22 @@
 <template>
   <div class="cell">
-    <div class="content">あ</div>
+    <div class="content"><Stone :color="color" /></div>
   </div>
 </template>
+
+<script lang="ts" setup>
+import Stone from "./Stone.vue";
+
+import { PropType } from "vue";
+import { StoneColor } from "@/modules/StoneColor";
+
+const props = defineProps({
+  color: {
+    type: String as PropType<StoneColor>,
+    default: "none",
+  },
+});
+</script>
 
 <style scoped>
 .cell {
@@ -16,5 +30,8 @@
   background-color: #008000;
   height: 100%;
   width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 </style>
