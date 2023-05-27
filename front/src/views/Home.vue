@@ -16,7 +16,7 @@
       <v-btn block @click="onPass" v-if="!canPlace">パス</v-btn>
     </div>
 
-    <GameOverDialog :ended="ended" :status="status" />
+    <GameOverDialog :status="status" />
   </v-container>
 </template>
 
@@ -37,7 +37,6 @@ const status = ref<number>(0);
 const canPlace = ref<boolean>(true);
 const store = useStore();
 const loading = computed(() => store.state.loading);
-const ended = computed(() => status.value != 0);
 
 const { get, post } = createClient<paths>({
   baseUrl: "http://localhost:8889/api",

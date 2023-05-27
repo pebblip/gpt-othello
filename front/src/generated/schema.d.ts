@@ -33,6 +33,13 @@ export interface paths {
      */
     post: operations["ai_place_ai_place_post"];
   };
+  "/gpt/ask": {
+    /**
+     * ChatGPTに次の手を尋ねる 
+     * @description ChatGPTに次の手を尋ね、最善手を返します。
+     */
+    post: operations["start_gpt_ask_post"];
+  };
 }
 
 export type webhooks = Record<string, never>;
@@ -61,7 +68,7 @@ export interface components {
       valids: ([number,number])[];
       /**
        * 盤面状態 
-       * @description 0:続行中, 1:黒の勝ち,-1:白の勝ち,3:引き分け 
+       * @description 0:続行中, 1:黒の勝ち,2:白の勝ち,3:引き分け 
        * @example 0
        */
       status: components["schemas"]["GameStatus"];
@@ -78,6 +85,21 @@ export interface components {
      * @enum {integer}
      */
     GameStatus: 0 | 1 | 2 | 3;
+    /** GptAnswer */
+    GptAnswer: {
+      /**
+       * 最善手 
+       * @description 次の指し手を表す座標位置 
+       * @example (0, 0)
+       */
+      position: [number,number];
+      /**
+       * 最善手の説明 
+       * @description 次の指し手の説明 
+       * @example 左上に置く
+       */
+      answer: string;
+    };
     /** HTTPValidationError */
     HTTPValidationError: {
       /** Detail */
@@ -123,6 +145,14 @@ export interface operations {
    * @description ユーザーが石を置く位置を指定してこのエンドポイントにリクエストを送信します。その位置に石を置いた後のゲーム盤面をレスポンスとして返します。
    */
   user_place_user_place_post: {
+    parameters: {
+      query: {
+        /** @description 石を置くX座標 */
+        x: number;
+        /** @description 石を置くY座標 */
+        y: number;
+      };
+    };
     requestBody: {
       content: {
         /** @example [[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,-1,1,0,0,0],[0,0,0,1,-1,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0]] */
@@ -149,14 +179,6 @@ export interface operations {
    * @description ユーザーがパスを宣言してこのエンドポイントにリクエストを送信します。その後、AIが石を置く位置を計算し、その位置に石を置いた後のゲーム盤面をレスポンスとして返します。
    */
   user_pass_user_pass_post: {
-    parameters: {
-      query: {
-        /** @description 石を置くX座標 */
-        x: number;
-        /** @description 石を置くY座標 */
-        y: number;
-      };
-    };
     requestBody: {
       content: {
         /** @example [[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,-1,1,0,0,0],[0,0,0,1,-1,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0]] */
@@ -194,6 +216,32 @@ export interface operations {
       200: {
         content: {
           "application/json": components["schemas"]["Board"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * ChatGPTに次の手を尋ねる 
+   * @description ChatGPTに次の手を尋ね、最善手を返します。
+   */
+  start_gpt_ask_post: {
+    requestBody: {
+      content: {
+        /** @example [[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,-1,1,0,0,0],[0,0,0,1,-1,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0]] */
+        "application/json": ((number)[])[];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["GptAnswer"];
         };
       };
       /** @description Validation Error */
