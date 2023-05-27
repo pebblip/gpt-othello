@@ -65,6 +65,12 @@ export interface components {
        * @example 0
        */
       status: components["schemas"]["GameStatus"];
+      /**
+       * スコア 
+       * @description 黒と白の石の数 
+       * @example [2, 2]
+       */
+      score: (number)[];
     };
     /**
      * GameStatus 
@@ -117,14 +123,6 @@ export interface operations {
    * @description ユーザーが石を置く位置を指定してこのエンドポイントにリクエストを送信します。その位置に石を置いた後のゲーム盤面をレスポンスとして返します。
    */
   user_place_user_place_post: {
-    parameters: {
-      query: {
-        /** @description 石を置くX座標 */
-        x: number;
-        /** @description 石を置くY座標 */
-        y: number;
-      };
-    };
     requestBody: {
       content: {
         /** @example [[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,-1,1,0,0,0],[0,0,0,1,-1,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0]] */

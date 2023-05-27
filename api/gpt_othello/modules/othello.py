@@ -29,6 +29,7 @@ class GameStatus(IntEnum):
 
 class Othello:
     def __init__(self, size: int):
+        self.size = size
         self.game = OthelloGame(size)
         self.board = self.game.getInitBoard()
         self.computer = self._init_computer()
@@ -42,11 +43,14 @@ class Othello:
 
     def get_valid_moves(self, stone: STONE) -> list[Position]:
         valids = self.game.getValidMoves(self.board, stone).tolist()
-        return [(int(i / self.game.n), int(i % self.game.n)) for i in range(len(valids)) if valids[i] == 1]
+        valid_moves = [(int(i / self.game.n), int(i % self.game.n)) for i in range(len(valids)) if valids[i] == 1]
+        print(valid_moves)
+        # [8,0]はパスを表す
+        return [] if valid_moves == [(self.size, 0)] else valid_moves
 
     def place_human(self, position: Position, stone: STONE):
         action = self.game.n * position[0] + position[1]
-        valids = self.game.getValidMoves(self.game.getCanonicalForm(self.board, Player.HUMAN), 1)
+        valids = self.game.getValidMoves(self.board, Player.HUMAN)
         if valids[action] == 0:
             assert valids[action] > 0
         self.board, _ = self.game.getNextState(self.board, Player.HUMAN, action)
@@ -56,13 +60,12 @@ class Othello:
         self.board, _ = self.game.getNextState(self.board, Player.COMPUTER, action)
 
     def get_score(self) -> tuple[int, int]:
-        print(self.board.flatten())
         human_score = len([cell for cell in self.board.flatten() if cell == STONE.BLACK])
         computer_score = len([cell for cell in self.board.flatten() if cell == STONE.WHITE])
         return (human_score, computer_score)
 
     def is_game_ended(self) -> GameStatus:
-        ended = self.game.getGameEnded(self.board, Player.HUMAN)
+        ended = self.game.getGameEnded(self.board, Player.HUMAN) * Player.HUMAN
         match ended:
             case Player.HUMAN:
                 return GameStatus.HUMAN_WIN
