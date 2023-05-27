@@ -1,14 +1,12 @@
 <template>
-  <div class="d-flex justify-center">
-    <div class="grid">
-      <div class="d-flex justify-center" v-for="i in rows" :key="i">
-        <Cell
-          v-for="j in cols"
-          :key="j"
-          :color="cellAt(j, i)"
-          @click="place(j, i)"
-        />
-      </div>
+  <div class="bg-white pa-10">
+    <div class="d-flex justify-center" v-for="i in rows" :key="i">
+      <Cell
+        v-for="j in cols"
+        :key="j"
+        :color="cellAt(j, i)"
+        @click="place(j, i)"
+      />
     </div>
   </div>
 </template>
@@ -21,10 +19,6 @@ import Cell from "./Cell.vue";
 const props = defineProps({
   size: {
     type: Number,
-    required: true,
-  },
-  cells: {
-    type: Array as PropType<StoneColor[]>,
     required: true,
   },
   cells: {
@@ -47,10 +41,4 @@ function place(x: number, y: number) {
 }
 </script>
 
-<style scoped>
-.grid {
-  background-color: white;
-  width: 100%;
-  padding: 0.5px;
-}
-</style>
+<style scoped></style>
