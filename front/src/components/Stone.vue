@@ -1,7 +1,7 @@
 <template>
   <div
     class="rounded-circle d-inline-block"
-    :class="color"
+    :class="stoneColor"
     style="height: 90%; width: 90%"
   />
 </template>
@@ -17,7 +17,7 @@ const props = defineProps({
   },
 });
 
-const color = computed(() => {
+const stoneColor = computed(() => {
   if (props.color == "black") {
     return "bg-black";
   }

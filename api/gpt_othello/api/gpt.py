@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
 from fastapi import APIRouter
-from fastapi.param_functions import Body, Depends, Query
+from fastapi.param_functions import Body, Depends
 from gpt_othello.modules.gpt import GPT
 from gpt_othello.modules.othello import STONE, Othello
 
