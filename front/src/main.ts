@@ -23,6 +23,7 @@ const store = createStore({
         white: 0,
       },
       loading: false,
+      gptSuggestedPoint: undefined,
     };
   },
   mutations: {
@@ -33,6 +34,10 @@ const store = createStore({
 
     updateLoading(state, payload) {
       state.loading = payload.loading;
+    },
+
+    updateGptSuggestedPoint(state, payload) {
+      state.gptSuggestedPoint = payload.gptSuggestedPoint;
     },
   },
 });

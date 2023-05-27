@@ -1,22 +1,58 @@
 <template>
   <v-container>
-    <Board :size="size" :cells="cells" @place="onPlace" />
-    <v-spacer />
+    <v-row>
+      <v-col cols="2">
+        <v-sheet>
+          <v-list class="bg-black">
+            <v-list-item>
+              <v-btn
+                block
+                @click="onPass"
+                :disabled="canPlace"
+                :class="!canPlace ? 'bg-orange' : ''"
+                >パス</v-btn
+              >
+            </v-list-item>
+            <v-list-item>
+              <v-btn block @click="tryAgain">最初からやり直す</v-btn>
+            </v-list-item>
+            <v-list-item>
+              <v-btn block @click="onGptAsk">ChatGPTに教えてもらう</v-btn>
+            </v-list-item>
 
-    <v-progress-linear
-      v-if="loading"
-      indeterminate
-      rounded
-      height="20"
-      color="light-gray"
-      striped
-    ></v-progress-linear>
+            <v-divider class="my-4" thickness="4"></v-divider>
 
-    <div class="d-flex pa-4">
-      <v-btn block @click="onPass" v-if="!canPlace">パス</v-btn>
-    </div>
+            <v-list-item link color="grey-lighten-4">
+              <v-list-item-title>
+                <v-sheet
+                  :height="250"
+                  style="white-space: pre-wrap"
+                  class="pa-2"
+                >
+                  {{ message }}
+                </v-sheet>
+              </v-list-item-title>
+            </v-list-item>
+            <v-list-item>
+              <v-progress-linear
+                v-if="loading"
+                indeterminate
+                color="yellow-darken-2"
+                height="10"
+              ></v-progress-linear>
+            </v-list-item>
+          </v-list>
+        </v-sheet>
+      </v-col>
 
-    <GameOverDialog :status="status" />
+      <v-col>
+        <v-sheet>
+          <v-list style="height: 80vmin" class="bg-black">
+            <Board :size="size" :cells="cells" @place="onPlace" />
+          </v-list>
+        </v-sheet>
+      </v-col>
+    </v-row>
   </v-container>
 </template>
 
@@ -27,9 +63,8 @@ import { onMounted } from "vue";
 import { paths } from "@/generated/schema";
 import { StoneColor } from "@/modules/StoneColor";
 import { useStore } from "vuex";
-import { computed } from "vue";
+import { computed, watch } from "vue";
 import Board from "@/components/Board.vue";
-import GameOverDialog from "@/components/GameOverDialog";
 
 const cells = ref<StoneColor[]>([]);
 const size = ref<number>(8);
@@ -37,9 +72,20 @@ const status = ref<number>(0);
 const canPlace = ref<boolean>(true);
 const store = useStore();
 const loading = computed(() => store.state.loading);
+const message = ref<string>("");
+
+watch(status, () => {
+  if (status.value === 1) {
+    message.value = "あなたの勝ち!";
+  } else if (status.value === 2) {
+    message.value = "コンピュータの勝ち!";
+  } else {
+    message.value = "引き分け!";
+  }
+});
 
 const { get, post } = createClient<paths>({
-  baseUrl: "http://localhost:8889/api",
+  baseUrl: import.meta.env.VITE_BASE_API_URL,
 });
 
 function toArray(rows: number[][]): StoneColor[] {
@@ -92,7 +138,9 @@ onMounted(async () => {
     cells.value = toArray(data!.rows);
     const blackScore = data!.score[0];
     const whiteScore = data!.score[1];
+
     store.commit("updateStone", { black: blackScore, white: whiteScore });
+    store.commit("updateGptSuggestedPoint", { gptSuggestedPoint: undefined });
   } finally {
     store.commit("updateLoading", { loading: false });
   }
@@ -115,7 +163,9 @@ async function onPlace(x: number, y: number) {
     status.value = data!.status;
     const blackScore = data!.score[0];
     const whiteScore = data!.score[1];
+
     store.commit("updateStone", { black: blackScore, white: whiteScore });
+    store.commit("updateGptSuggestedPoint", { gptSuggestedPoint: undefined });
 
     await demandAiToPlace();
   } finally {
@@ -124,6 +174,10 @@ async function onPlace(x: number, y: number) {
 }
 
 async function onPass() {
+  if (canPlace.value) {
+    alert("パスできません");
+    return;
+  }
   store.commit("updateLoading", { loading: true });
   try {
     const { data, error } = await post("/user/pass", {
@@ -134,7 +188,9 @@ async function onPass() {
     const whiteScore = data!.score[1];
     canPlace.value = data!.valids.length > 0;
     status.value = data!.status;
+
     store.commit("updateStone", { black: blackScore, white: whiteScore });
+    store.commit("updateGptSuggestedPoint", { gptSuggestedPoint: undefined });
   } finally {
     store.commit("updateLoading", { loading: false });
   }
@@ -151,9 +207,29 @@ async function demandAiToPlace() {
     const whiteScore = data!.score[1];
     canPlace.value = data!.valids.length > 0;
     status.value = data!.status;
+
     store.commit("updateStone", { black: blackScore, white: whiteScore });
+    store.commit("updateGptSuggestedPoint", { gptSuggestedPoint: undefined });
   } finally {
     store.commit("updateLoading", { loading: false });
   }
+}
+
+async function onGptAsk() {
+  store.commit("updateLoading", { loading: true });
+  try {
+    const { data, error } = await post("/gpt/ask", {
+      body: toDimension(),
+    });
+    const { position, answer } = data;
+    message.value = answer;
+    store.commit("updateGptSuggestedPoint", { gptSuggestedPoint: position });
+  } finally {
+    store.commit("updateLoading", { loading: false });
+  }
+}
+
+function tryAgain() {
+  location.reload();
 }
 </script>

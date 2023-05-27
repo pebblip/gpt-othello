@@ -1,19 +1,19 @@
 <template>
-  <v-app-bar :elevation="8">
+  <v-app-bar flat class="bg-black">
     <v-app-bar-title>
-      <v-icon icon="mdi-checkbox-blank-circle" />
-      Webオセロ
       <v-icon icon="mdi-checkbox-blank-circle-outline" />
+      Webオセロ
+      <v-icon icon="mdi-checkbox-blank-circle" />
     </v-app-bar-title>
     <v-spacer />
 
     <v-btn icon>
-      <v-icon>mdi-checkbox-blank-circle</v-icon>
+      <v-icon>mdi-checkbox-blank-circle-outline</v-icon>
       {{ blackScore }}
     </v-btn>
 
     <v-btn icon>
-      <v-icon>mdi-checkbox-blank-circle-outline</v-icon>
+      <v-icon>mdi-checkbox-blank-circle</v-icon>
       {{ whiteScore }}
     </v-btn>
   </v-app-bar>

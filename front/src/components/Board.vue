@@ -1,10 +1,17 @@
 <template>
-  <div class="bg-white pa-10">
-    <div class="d-flex justify-center" v-for="i in rows" :key="i">
+  <div class="bg-black h-100">
+    <div
+      class="d-flex justify-center"
+      v-for="i in rows"
+      :key="i"
+      style="height: calc(100% / 8)"
+    >
       <Cell
         v-for="j in cols"
         :key="j"
         :color="cellAt(j, i)"
+        :x="j"
+        :y="i"
         @click="place(j, i)"
       />
     </div>
@@ -12,8 +19,9 @@
 </template>
 
 <script lang="ts" setup>
-import { PropType } from "vue";
+import { PropType, computed } from "vue";
 import { StoneColor } from "@/modules/StoneColor";
+import { useStore } from "vuex";
 import Cell from "./Cell.vue";
 
 const props = defineProps({
@@ -40,5 +48,3 @@ function place(x: number, y: number) {
   emits("place", x, y);
 }
 </script>
-
-<style scoped></style>
