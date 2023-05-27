@@ -1,6 +1,7 @@
 <template>
   <v-container>
     <Board :size="size" :cells="cells" @place="onPlace" />
+    <v-spacer />
 
     <v-progress-linear
       v-if="loading"
@@ -10,6 +11,12 @@
       color="light-gray"
       striped
     ></v-progress-linear>
+
+    <div class="d-flex pa-4">
+      <v-btn block @click="onPass" v-if="!canPlace">パス</v-btn>
+    </div>
+
+    <GameOverDialog :ended="ended" :status="status" />
   </v-container>
 </template>
 
@@ -18,21 +25,23 @@ import createClient from "openapi-fetch";
 import { ref } from "vue";
 import { onMounted } from "vue";
 import { paths } from "@/generated/schema";
-import Board from "@/components/Board.vue";
 import { StoneColor } from "@/modules/StoneColor";
 import { useStore } from "vuex";
 import { computed } from "vue";
+import Board from "@/components/Board.vue";
+import GameOverDialog from "@/components/GameOverDialog";
 
 const cells = ref<StoneColor[]>([]);
 const size = ref<number>(8);
+const status = ref<number>(0);
+const canPlace = ref<boolean>(true);
+const store = useStore();
+const loading = computed(() => store.state.loading);
+const ended = computed(() => status.value != 0);
 
 const { get, post } = createClient<paths>({
   baseUrl: "http://localhost:8889/api",
 });
-
-const store = useStore();
-
-const loading = computed(() => store.state.loading);
 
 function toArray(rows: number[][]): StoneColor[] {
   let cells: StoneColor[] = [];
@@ -103,14 +112,33 @@ async function onPlace(x: number, y: number) {
       body: toDimension(),
     });
     cells.value = toArray(data!.rows);
+    canPlace.value = data!.valids.length > 0;
+    status.value = data!.status;
     const blackScore = data!.score[0];
     const whiteScore = data!.score[1];
+    store.commit("updateStone", { black: blackScore, white: whiteScore });
+
+    await demandAiToPlace();
+  } finally {
+    store.commit("updateLoading", { loading: false });
+  }
+}
+
+async function onPass() {
+  store.commit("updateLoading", { loading: true });
+  try {
+    const { data, error } = await post("/user/pass", {
+      body: toDimension(),
+    });
+    cells.value = toArray(data!.rows);
+    const blackScore = data!.score[0];
+    const whiteScore = data!.score[1];
+    canPlace.value = data!.valids.length > 0;
+    status.value = data!.status;
     store.commit("updateStone", { black: blackScore, white: whiteScore });
   } finally {
     store.commit("updateLoading", { loading: false });
   }
-
-  await demandAiToPlace();
 }
 
 async function demandAiToPlace() {
@@ -122,6 +150,8 @@ async function demandAiToPlace() {
     cells.value = toArray(data!.rows);
     const blackScore = data!.score[0];
     const whiteScore = data!.score[1];
+    canPlace.value = data!.valids.length > 0;
+    status.value = data!.status;
     store.commit("updateStone", { black: blackScore, white: whiteScore });
   } finally {
     store.commit("updateLoading", { loading: false });

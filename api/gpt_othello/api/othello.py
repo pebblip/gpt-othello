@@ -29,6 +29,16 @@ class UserPlaceParams:
 
 
 @dataclass
+class UserPassParams:
+    board: list[list[int]] = Body(
+        ...,
+        title="盤面",
+        description="2次元配列で表現した現在のオセロ盤面。1:黒,-1:白",
+        example="[[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,-1,1,0,0,0],[0,0,0,1,-1,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0]]",
+    )
+
+
+@dataclass
 class AIPlaceParams:
     board: list[list[int]] = Body(
         ...,
@@ -71,8 +81,6 @@ def user_place(
     othello.set_board(q.board)
     othello.place_human((q.x, q.y), STONE.BLACK)
 
-    print(othello.get_score())
-
     return Board(
         size=BOARD_SIZE,
         rows=othello.get_board(),
@@ -89,11 +97,11 @@ def user_place(
     description="ユーザーがパスを宣言してこのエンドポイントにリクエストを送信します。その後、AIが石を置く位置を計算し、その位置に石を置いた後のゲーム盤面をレスポンスとして返します。",
 )
 def user_pass(
-    q: UserPlaceParams = Depends(),
+    q: UserPassParams = Depends(),
 ):
     othello = Othello(BOARD_SIZE)
     othello.set_board(q.board)
-    othello.place_human((q.x, q.y), STONE.WHITE)
+    othello.place_computer(STONE.WHITE)
 
     return Board(
         size=BOARD_SIZE,
@@ -116,7 +124,6 @@ def ai_place(
     othello = Othello(BOARD_SIZE)
     othello.set_board(q.board)
     othello.place_computer(STONE.WHITE)
-    print("ai")
     return Board(
         size=BOARD_SIZE,
         rows=othello.get_board(),
