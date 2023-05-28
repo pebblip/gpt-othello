@@ -1,7 +1,7 @@
 <template>
   <v-container>
     <v-row>
-      <v-col cols="2">
+      <v-col cols="3">
         <v-sheet>
           <v-list class="bg-black">
             <v-list-item>
