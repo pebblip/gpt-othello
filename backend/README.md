@@ -25,3 +25,5 @@ http://localhost:8000/api/docs
 ```
 
 ここで、ポート番号8000は、.envファイルの`API_PORT`で設定した値。
+
+
