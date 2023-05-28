@@ -1,4 +1,4 @@
-:black_circle: GPT-OTHELLO :white_circle: (Clackギーク祭）
+:black_circle: GPT-OTHELLO :white_circle:
 ----------------------------------------
 
 Webのシンプルオセロゲーム。
