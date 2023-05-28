@@ -1,57 +1,38 @@
-# base
+:black_circle: GPT-OTHELLO （フロント） :white_circle:
+-------------------
 
-## Project setup
+GPTオセロのフロント（画面）です。
+
+## ローカル環境での実行方法
+
+1. .env.defaultをコピーして.env.localファイルを作成する。
+
+必要があれば、`VITE_BASE_API_URL`の値（http://localhost:8000/dev/api）を変更する。
+ポート番号8000はバックエンド側の.envファイルの`API_PORT`と合わせる。
+
+2. 必要なパッケージインストールする。
 
 ```
-# yarn
 yarn
-
-# npm
-npm install
-
-# pnpm
-pnpm install
 ```
 
-### Compiles and hot-reloads for development
+3. 起動する。
 
 ```
-# yarn
 yarn dev
-
-# npm
-npm run dev
-
-# pnpm
-pnpm dev
 ```
 
-### Compiles and minifies for production
+以下のようなログが出力されればOK。
+```
+  VITE v4.3.8  ready in 340 ms
+
+  ➜  Local:   http://localhost:3000/
+  ➜  Network: use --host to expose
+  ➜  press h to show help
 
 ```
-# yarn
-yarn build
 
-# npm
-npm run build
+4. ゲームを開始する。
 
-# pnpm
-pnpm build
-```
+上記で表示されたURL（ http://localhost:3000/ ）にブラウザでアクセスする。
 
-### Lints and fixes files
-
-```
-# yarn
-yarn lint
-
-# npm
-npm run lint
-
-# pnpm
-pnpm lint
-```
-
-### Customize configuration
-
-See [Configuration Reference](https://vitejs.dev/config/).
