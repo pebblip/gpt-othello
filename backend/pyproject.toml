@@ -6,7 +6,7 @@ authors = ["Tomoyuki Higuchi <higuchi@peaberryz.com>"]
 packages = [{include = "gpt_othello"}]
 
 [tool.poetry.dependencies]
-python = "^3.11"
+python = "^3.10"
 fastapi = {version = "^0.95.1"}
 uvicorn = {extras = ["standard"], version = "^0.22.0"}
 openai = "^0.27.6"

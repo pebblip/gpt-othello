@@ -9,7 +9,9 @@ services:
       target: dev
     command: uvicorn gpt_othello.main:app --host 0.0.0.0 --port 8000 --reload
     environment:
-      TZ: "Asia/Tokyo"    
+      TZ: "Asia/Tokyo"
+      STAGE: ${STAGE:-dev}
+      OPEN_API_KEY: ${OPEN_API_KEY}
     ports:
       - ${API_PORT}:8000
     volumes:

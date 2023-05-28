@@ -30,7 +30,7 @@ export class BackendStack extends Stack {
       timeout: Duration.minutes(3),
       memorySize: 4096,
       environment: {
-        STATE: "prod",
+        STAGE: "prod",
         OPEN_API_KEY: openApiKey.stringValue,
       },
     });

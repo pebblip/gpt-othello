@@ -221,7 +221,8 @@ async function onGptAsk() {
     const { data, error } = await post("/gpt/ask", {
       body: toDimension(),
     });
-    const { position, answer } = data;
+    const answer = data!.answer;
+    const position = data!.position;
     message.value = answer;
     store.commit("updateGptSuggestedPoint", { gptSuggestedPoint: position });
   } finally {

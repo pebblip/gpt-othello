@@ -44,7 +44,6 @@ class Othello:
     def get_valid_moves(self, stone: STONE) -> list[Position]:
         valids = self.game.getValidMoves(self.board, stone).tolist()
         valid_moves = [(int(i / self.game.n), int(i % self.game.n)) for i in range(len(valids)) if valids[i] == 1]
-        print(valid_moves)
         # [8,0]はパスを表す
         return [] if valid_moves == [(self.size, 0)] else valid_moves
 
