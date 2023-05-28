@@ -41,3 +41,5 @@ COPY pyproject.toml poetry.lock ./
 COPY gpt_othello ./gpt_othello
 RUN poetry config virtualenvs.create false \
     && poetry install --no-interaction --no-dev
+
+CMD ["gpt_othello.main.lambda_handler"]

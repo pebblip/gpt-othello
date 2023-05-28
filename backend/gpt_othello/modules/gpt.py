@@ -37,6 +37,4 @@ class GPT:
 
         response = response["choices"][0]["message"]["content"]
 
-        print(response)
-
         return json.loads(response)
