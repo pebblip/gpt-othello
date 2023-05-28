@@ -8,7 +8,7 @@ GPTオセロのバックエンドAPIです。
 1. .env.defaultをコピーして.envファイルを作成する。
 
 * 必要があれば、`API_PORT`を変更する。
-* ChatGPTを利用する場合は、各自で取得したOpenAIのAPIキーを`OPEN_API_KEY`に設定する。
+* ChatGPTを利用する場合は、各自で取得したOpenAIのAPIキーを`OPENAI_API_KEY`に設定する。
 
 2. Dockerを立ち上げる
 

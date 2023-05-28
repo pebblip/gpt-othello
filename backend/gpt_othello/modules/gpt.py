@@ -1,9 +1,11 @@
+import os
 import json
 
 import openai
 
-openai.api_key = "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"
+openai.api_key = os.getenv("OPENAI_API_KEY")
 
+print(os.getenv("OPENAI_API_KEY"));
 
 class GPT:
     def ask(self, board: list[list[int]], valids: list[tuple[int, int]]):

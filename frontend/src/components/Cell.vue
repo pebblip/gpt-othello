@@ -33,16 +33,12 @@ const props = defineProps({
 const store = useStore();
 const gptSuggestedPoint = computed(() => store.state.gptSuggestedPoint);
 
-console.log("suggested", gptSuggestedPoint);
-
 const gptSuggested = computed(
   () =>
     gptSuggestedPoint.value &&
     gptSuggestedPoint.value[0] == props.x &&
     gptSuggestedPoint.value[1] == props.y
 );
-
-console.log("xxx", gptSuggested);
 </script>
 
 <style scoped>
