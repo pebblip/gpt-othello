@@ -11,7 +11,7 @@ services:
     environment:
       TZ: "Asia/Tokyo"
       STAGE: ${STAGE:-dev}
-      OPENAI_API_KEY: ${OPEN_API_KEY}
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
     ports:
       - ${API_PORT}:8000
     volumes:
