@@ -2,10 +2,11 @@ from dataclasses import dataclass
 
 from fastapi import APIRouter
 from fastapi.param_functions import Body, Depends
+
 from gpt_othello.modules.gpt import GPT
 from gpt_othello.modules.othello import STONE, Othello
 
-from .schema import GptAnswer
+from .schema import GptAnswerResponse
 
 router = APIRouter()
 
@@ -17,14 +18,23 @@ class AskParams:
     board: list[list[int]] = Body(
         ...,
         title="盤面",
-        description="2次元配列で表現した現在のオセロ盤面。1:黒,-1:白",
-        example="[[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,-1,1,0,0,0],[0,0,0,1,-1,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0]]",
+        description="2次元配列で表現した現在のオセロ盤面。-1:黒,1:白",
+        example="""
+        [[0,0,0,0,0,0,0,0],
+         [0,0,0,0,0,0,0,0],
+         [0,0,0,0,0,0,0,0],
+         [0,0,0,-1,1,0,0,0],
+         [0,0,0,1,-1,0,0,0],
+         [0,0,0,0,0,0,0,0],
+         [0,0,0,0,0,0,0,0],
+         [0,0,0,0,0,0,0,0]]
+        """,
     )
 
 
 @router.post(
     "/gpt/ask",
-    response_model=GptAnswer,
+    response_model=GptAnswerResponse,
     summary="ChatGPTに次の手を尋ねる",
     description="ChatGPTに次の手を尋ね、最善手を返します。",
 )
@@ -36,6 +46,8 @@ def start(
 
     gpt = GPT()
 
+    gpt.ask(othello.get_board(), othello.get_valid_moves(STONE.BLACK))
+
     answer = gpt.ask(othello.get_board(), othello.get_valid_moves(STONE.BLACK))
 
-    return GptAnswer(position=answer["position"], answer=answer["description"])
+    return GptAnswerResponse(position=answer["position"], answer=answer["description"])

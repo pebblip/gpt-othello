@@ -1,4 +1,5 @@
 from enum import IntEnum
+from typing import cast
 
 import numpy as np
 
@@ -6,8 +7,6 @@ from ..lib.MCTS import MCTS
 from ..lib.othello.OthelloGame import OthelloGame
 from ..lib.othello.pytorch.NNet import NNetWrapper as NNet
 from ..lib.utils import dotdict
-
-Position = tuple[int, int]
 
 
 class STONE(IntEnum):
@@ -27,6 +26,11 @@ class GameStatus(IntEnum):
     DRAW = 3
 
 
+Position = tuple[int, int]
+Row = list[STONE]
+Board = list[Row]
+
+
 class Othello:
     def __init__(self, size: int):
         self.size = size
@@ -38,8 +42,8 @@ class Othello:
         initial_board = np.array(board)
         self.board = self.game.setInitBoard(initial_board)
 
-    def get_board(self) -> list[list[STONE]]:
-        return self.board.tolist()
+    def get_board(self) -> Board:
+        return cast(list[list[STONE]], self.board.tolist())
 
     def get_valid_moves(self, stone: STONE) -> list[Position]:
         valids = self.game.getValidMoves(self.board, stone).tolist()

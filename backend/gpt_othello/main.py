@@ -1,13 +1,14 @@
 import os
-from mangum import Mangum
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from mangum import Mangum
 
 from .api import app as api
 
 _stage = os.getenv("STAGE", "dev")
 
-_root_path = '' if _stage == 'dev' else '/prod'
+_root_path = "" if _stage == "dev" else "/prod"
 
 app = FastAPI(root_path=_root_path)
 

@@ -1,14 +1,15 @@
-import os
 import json
+import os
 
 import openai
 
+from .othello import Board
+
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
-print(os.getenv("OPENAI_API_KEY"));
 
 class GPT:
-    def ask(self, board: list[list[int]], valids: list[tuple[int, int]]):
+    def ask(self, board: Board, valids: list[tuple[int, int]]):
         string_board = "\n".join([" ".join(map(str, row)) for row in board])
         string_valids = ", ".join(map(str, valids))
 

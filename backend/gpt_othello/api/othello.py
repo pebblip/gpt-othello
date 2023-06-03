@@ -2,9 +2,10 @@ from dataclasses import dataclass
 
 from fastapi import APIRouter
 from fastapi.param_functions import Body, Depends, Query
-from gpt_othello.modules.othello import STONE, Othello
 
-from .schema import Board
+from gpt_othello.modules.othello import STONE, Board, Othello
+
+from .schema import BoardResponse
 
 router = APIRouter()
 
@@ -20,37 +21,64 @@ class InitParams:
 class UserPlaceParams:
     x: int = Query(..., title="X座標", description="石を置くX座標", ge=0)
     y: int = Query(..., title="Y座標", description="石を置くY座標", ge=0)
-    board: list[list[int]] = Body(
+    board: Board = Body(
         ...,
         title="盤面",
         description="2次元配列で表現した現在のオセロ盤面。1:黒,-1:白",
-        example="[[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,-1,1,0,0,0],[0,0,0,1,-1,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0]]",
+        example="""
+        [[0,0,0,0,0,0,0,0],
+         [0,0,0,0,0,0,0,0],
+         [0,0,0,0,0,0,0,0],
+         [0,0,0,-1,1,0,0,0],
+         [0,0,0,1,-1,0,0,0],
+         [0,0,0,0,0,0,0,0],
+         [0,0,0,0,0,0,0,0],
+         [0,0,0,0,0,0,0,0]]
+       """,
     )
 
 
 @dataclass
 class UserPassParams:
-    board: list[list[int]] = Body(
+    board: Board = Body(
         ...,
         title="盤面",
-        description="2次元配列で表現した現在のオセロ盤面。1:黒,-1:白",
-        example="[[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,-1,1,0,0,0],[0,0,0,1,-1,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0]]",
+        description="2次元配列で表現した現在のオセロ盤面。-1:黒,1:白",
+        example="""
+        [[0,0,0,0,0,0,0,0],
+         [0,0,0,0,0,0,0,0],
+         [0,0,0,0,0,0,0,0],
+         [0,0,0,-1,1,0,0,0],
+         [0,0,0,1,-1,0,0,0],
+         [0,0,0,0,0,0,0,0],
+         [0,0,0,0,0,0,0,0],
+         [0,0,0,0,0,0,0,0]]
+       """,
     )
 
 
 @dataclass
 class AIPlaceParams:
-    board: list[list[int]] = Body(
+    board: Board = Body(
         ...,
         title="盤面",
-        description="2次元配列で表現した現在のオセロ盤面。1:黒,-1:白",
-        example="[[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,-1,1,0,0,0],[0,0,0,1,-1,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0]]",
+        description="2次元配列で表現した現在のオセロ盤面。-1:黒,1:白",
+        example="""
+        [[0,0,0,0,0,0,0,0],
+         [0,0,0,0,0,0,0,0],
+         [0,0,0,0,0,0,0,0],
+         [0,0,0,-1,1,0,0,0],
+         [0,0,0,1,-1,0,0,0],
+         [0,0,0,0,0,0,0,0],
+         [0,0,0,0,0,0,0,0],
+         [0,0,0,0,0,0,0,0]]
+       """,
     )
 
 
 @router.get(
     "/start",
-    response_model=Board,
+    response_model=BoardResponse,
     summary="ゲームの開始",
     description="このエンドポイントはオセロゲームを開始します。ゲーム状態が初期化され、初期盤面がレスポンスとして返されます。",
 )
@@ -59,7 +87,7 @@ def start(
 ):
     othello = Othello(BOARD_SIZE)
 
-    return Board(
+    return BoardResponse(
         size=BOARD_SIZE,
         rows=othello.get_board(),
         valids=othello.get_valid_moves(STONE.BLACK),
@@ -70,7 +98,7 @@ def start(
 
 @router.post(
     "/user/place",
-    response_model=Board,
+    response_model=BoardResponse,
     summary="ユーザの石の配置",
     description="ユーザーが石を置く位置を指定してこのエンドポイントにリクエストを送信します。その位置に石を置いた後のゲーム盤面をレスポンスとして返します。",
 )
@@ -81,7 +109,7 @@ def user_place(
     othello.set_board(q.board)
     othello.place_human((q.x, q.y), STONE.BLACK)
 
-    return Board(
+    return BoardResponse(
         size=BOARD_SIZE,
         rows=othello.get_board(),
         valids=othello.get_valid_moves(STONE.BLACK),
@@ -92,7 +120,7 @@ def user_place(
 
 @router.post(
     "/user/pass",
-    response_model=Board,
+    response_model=BoardResponse,
     summary="ユーザのパス",
     description="ユーザーがパスを宣言してこのエンドポイントにリクエストを送信します。その後、AIが石を置く位置を計算し、その位置に石を置いた後のゲーム盤面をレスポンスとして返します。",
 )
@@ -103,7 +131,7 @@ def user_pass(
     othello.set_board(q.board)
     othello.place_computer(STONE.WHITE)
 
-    return Board(
+    return BoardResponse(
         size=BOARD_SIZE,
         rows=othello.get_board(),
         valids=othello.get_valid_moves(STONE.BLACK),
@@ -114,7 +142,7 @@ def user_pass(
 
 @router.post(
     "/ai/place",
-    response_model=Board,
+    response_model=BoardResponse,
     summary="AIの石の配置",
     description="このエンドポイントを呼び出すと、AIが次に石を置く位置を計算し、その位置に石を置いた後のゲーム盤面がレスポンスとして返されます。",
 )
@@ -124,7 +152,7 @@ def ai_place(
     othello = Othello(BOARD_SIZE)
     othello.set_board(q.board)
     othello.place_computer(STONE.WHITE)
-    return Board(
+    return BoardResponse(
         size=BOARD_SIZE,
         rows=othello.get_board(),
         valids=othello.get_valid_moves(STONE.BLACK),
