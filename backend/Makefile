@@ -10,7 +10,7 @@ Commands:
   build:		Dockerコンテナのビルド
   rebuild:		Dockerコンテナの再ビルド
   attach:		Dockerコンテナにアタッチ
-  format:       コードのフォーマット
+  format:		コードのフォーマット
   lint:			コードの静的解析
 
 endef

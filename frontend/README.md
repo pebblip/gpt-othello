@@ -1,4 +1,4 @@
-:black_circle: GPT-OTHELLO （フロント） :white_circle:
+:black_circle: GPT-OTHELLO フロントエンド :white_circle:
 -------------------
 
 GPTオセロのフロント（画面）です。
@@ -7,7 +7,7 @@ GPTオセロのフロント（画面）です。
 
 1. .env.defaultをコピーして.env.localファイルを作成する。
 
-必要があれば、`VITE_BASE_API_URL`の値（http://localhost:8000/dev/api）を変更する。
+必要があれば、`VITE_BASE_API_URL`の値（ http://localhost:8000/dev/api ）を変更する。
 ポート番号8000はバックエンド側の.envファイルの`API_PORT`と合わせる。
 
 2. 必要なパッケージインストールする。

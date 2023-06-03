@@ -1,4 +1,4 @@
-:black_circle: GPT-OTHELLO :white_circle:
+:black_circle: GPT-OTHELLO CDK :white_circle:
 ----------------------------------------
 
 # デプロイ手順
