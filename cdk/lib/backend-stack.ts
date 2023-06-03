@@ -31,7 +31,7 @@ export class BackendStack extends Stack {
       memorySize: 4096,
       environment: {
         STAGE: "prod",
-        OPEN_API_KEY: openApiKey.stringValue,
+        OPENAI_API_KEY: openApiKey.stringValue,
       },
     });
 
