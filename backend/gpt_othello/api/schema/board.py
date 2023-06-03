@@ -2,7 +2,7 @@ from pydantic import BaseModel, Field
 
 from gpt_othello.modules.othello import GameStatus
 
-from ..othello import Board
+Board = list[list[int]]
 
 
 class BoardResponse(BaseModel):

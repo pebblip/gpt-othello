@@ -9,9 +9,10 @@ from ..lib.othello.pytorch.NNet import NNetWrapper as NNet
 from ..lib.utils import dotdict
 
 
-class STONE(IntEnum):
+class Stone(IntEnum):
     BLACK = -1
     WHITE = +1
+    EMPTY = 0
 
 
 class Player(IntEnum):
@@ -27,7 +28,7 @@ class GameStatus(IntEnum):
 
 
 Position = tuple[int, int]
-Row = list[STONE]
+Row = list[Stone]
 Board = list[Row]
 
 
@@ -43,28 +44,28 @@ class Othello:
         self.board = self.game.setInitBoard(initial_board)
 
     def get_board(self) -> Board:
-        return cast(list[list[STONE]], self.board.tolist())
+        return cast(list[list[Stone]], self.board.tolist())
 
-    def get_valid_moves(self, stone: STONE) -> list[Position]:
+    def get_valid_moves(self, stone: Stone) -> list[Position]:
         valids = self.game.getValidMoves(self.board, stone).tolist()
         valid_moves = [(int(i / self.game.n), int(i % self.game.n)) for i in range(len(valids)) if valids[i] == 1]
         # [8,0]はパスを表す
         return [] if valid_moves == [(self.size, 0)] else valid_moves
 
-    def place_human(self, position: Position, stone: STONE):
+    def place_human(self, position: Position, stone: Stone):
         action = self.game.n * position[0] + position[1]
         valids = self.game.getValidMoves(self.board, Player.HUMAN)
         if valids[action] == 0:
             assert valids[action] > 0
         self.board, _ = self.game.getNextState(self.board, Player.HUMAN, action)
 
-    def place_computer(self, stone: STONE):
+    def place_computer(self, stone: Stone):
         action = self.computer(self.game.getCanonicalForm(self.board, Player.COMPUTER))
         self.board, _ = self.game.getNextState(self.board, Player.COMPUTER, action)
 
     def get_score(self) -> tuple[int, int]:
-        human_score = len([cell for cell in self.board.flatten() if cell == STONE.BLACK])
-        computer_score = len([cell for cell in self.board.flatten() if cell == STONE.WHITE])
+        human_score = len([cell for cell in self.board.flatten() if cell == Stone.BLACK])
+        computer_score = len([cell for cell in self.board.flatten() if cell == Stone.WHITE])
         return (human_score, computer_score)
 
     def is_game_ended(self) -> GameStatus:

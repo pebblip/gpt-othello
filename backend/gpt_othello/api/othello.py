@@ -3,13 +3,16 @@ from dataclasses import dataclass
 from fastapi import APIRouter
 from fastapi.param_functions import Body, Depends, Query
 
-from gpt_othello.modules.othello import STONE, Board, Othello
+from gpt_othello.modules.othello import Board as BoardModel
+from gpt_othello.modules.othello import Othello, Stone
 
 from .schema import BoardResponse
 
 router = APIRouter()
 
 BOARD_SIZE = 8
+
+BoardParameter = list[list[int]]
 
 
 @dataclass
@@ -21,7 +24,7 @@ class InitParams:
 class UserPlaceParams:
     x: int = Query(..., title="X座標", description="石を置くX座標", ge=0)
     y: int = Query(..., title="Y座標", description="石を置くY座標", ge=0)
-    board: Board = Body(
+    board: BoardParameter = Body(
         ...,
         title="盤面",
         description="2次元配列で表現した現在のオセロ盤面。1:黒,-1:白",
@@ -40,7 +43,7 @@ class UserPlaceParams:
 
 @dataclass
 class UserPassParams:
-    board: Board = Body(
+    board: BoardParameter = Body(
         ...,
         title="盤面",
         description="2次元配列で表現した現在のオセロ盤面。-1:黒,1:白",
@@ -59,7 +62,7 @@ class UserPassParams:
 
 @dataclass
 class AIPlaceParams:
-    board: Board = Body(
+    board: BoardParameter = Body(
         ...,
         title="盤面",
         description="2次元配列で表現した現在のオセロ盤面。-1:黒,1:白",
@@ -76,6 +79,10 @@ class AIPlaceParams:
     )
 
 
+def toRows(board: BoardModel):
+    return [[int(stone) for stone in row] for row in board]
+
+
 @router.get(
     "/start",
     response_model=BoardResponse,
@@ -89,8 +96,8 @@ def start(
 
     return BoardResponse(
         size=BOARD_SIZE,
-        rows=othello.get_board(),
-        valids=othello.get_valid_moves(STONE.BLACK),
+        rows=toRows(othello.get_board()),
+        valids=othello.get_valid_moves(Stone.BLACK),
         status=othello.is_game_ended(),
         score=othello.get_score(),
     )
@@ -107,12 +114,12 @@ def user_place(
 ):
     othello = Othello(BOARD_SIZE)
     othello.set_board(q.board)
-    othello.place_human((q.x, q.y), STONE.BLACK)
+    othello.place_human((q.x, q.y), Stone.BLACK)
 
     return BoardResponse(
         size=BOARD_SIZE,
-        rows=othello.get_board(),
-        valids=othello.get_valid_moves(STONE.BLACK),
+        rows=toRows(othello.get_board()),
+        valids=othello.get_valid_moves(Stone.BLACK),
         status=othello.is_game_ended(),
         score=othello.get_score(),
     )
@@ -129,12 +136,12 @@ def user_pass(
 ):
     othello = Othello(BOARD_SIZE)
     othello.set_board(q.board)
-    othello.place_computer(STONE.WHITE)
+    othello.place_computer(Stone.WHITE)
 
     return BoardResponse(
         size=BOARD_SIZE,
-        rows=othello.get_board(),
-        valids=othello.get_valid_moves(STONE.BLACK),
+        rows=toRows(othello.get_board()),
+        valids=othello.get_valid_moves(Stone.BLACK),
         status=othello.is_game_ended(),
         score=othello.get_score(),
     )
@@ -151,11 +158,11 @@ def ai_place(
 ):
     othello = Othello(BOARD_SIZE)
     othello.set_board(q.board)
-    othello.place_computer(STONE.WHITE)
+    othello.place_computer(Stone.WHITE)
     return BoardResponse(
         size=BOARD_SIZE,
-        rows=othello.get_board(),
-        valids=othello.get_valid_moves(STONE.BLACK),
+        rows=toRows(othello.get_board()),
+        valids=othello.get_valid_moves(Stone.BLACK),
         status=othello.is_game_ended(),
         score=othello.get_score(),
     )

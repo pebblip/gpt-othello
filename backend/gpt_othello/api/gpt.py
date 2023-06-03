@@ -4,7 +4,7 @@ from fastapi import APIRouter
 from fastapi.param_functions import Body, Depends
 
 from gpt_othello.modules.gpt import GPT
-from gpt_othello.modules.othello import STONE, Othello
+from gpt_othello.modules.othello import Othello, Stone
 
 from .schema import GptAnswerResponse
 
@@ -46,8 +46,8 @@ def start(
 
     gpt = GPT()
 
-    gpt.ask(othello.get_board(), othello.get_valid_moves(STONE.BLACK))
+    gpt.ask(othello.get_board(), othello.get_valid_moves(Stone.BLACK))
 
-    answer = gpt.ask(othello.get_board(), othello.get_valid_moves(STONE.BLACK))
+    answer = gpt.ask(othello.get_board(), othello.get_valid_moves(Stone.BLACK))
 
     return GptAnswerResponse(position=answer["position"], answer=answer["description"])
